@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
     [SerializeField] SpriteRenderer playerSprite;
+    [SerializeField] bool Using2Dir = false;
     private Controls controls;
     private Rigidbody2D rBody;
     private Animator animator;
@@ -30,10 +31,24 @@ public class PlayerController : MonoBehaviour
         controls.Player.Disable();
     }
 
+    private void Start()
+    {
+        //We do this so the player starts facing down
+        animator.SetFloat("moveX", 0);
+        animator.SetFloat("moveY", -1);
+    }
+
     private void Update()
     {
-        UpdateAnimator();
-    }  
+        if(Using2Dir)
+        {
+            UpdateAnimator2Dir();
+        }
+        else
+        {
+            UpdateAnimator4Dir();
+        }
+    }
 
     private void FixedUpdate()
     {
@@ -41,7 +56,21 @@ public class PlayerController : MonoBehaviour
         rBody.velocity = moveInput * speed;
     }
 
-    private void UpdateAnimator()
+    private void UpdateAnimator4Dir()
+    {
+        if(moveInput != Vector2.zero)
+        {
+            animator.SetBool("IsWalking", true);
+            animator.SetFloat("moveX", moveInput.x);
+            animator.SetFloat("moveY", moveInput.y);          
+        }
+        else
+        {
+            animator.SetBool("IsWalking", false);
+        }
+    }
+
+    private void UpdateAnimator2Dir()
     {
         if(moveInput == Vector2.zero)
         {
