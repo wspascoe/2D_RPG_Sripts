@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Vector2 moveInput;
     private bool isMoving = false;
+    private Coroutine coroutine;
 
     private void Awake()
     {
@@ -22,17 +24,19 @@ public class PlayerController : MonoBehaviour
     }
 
     private void OnEnable()
-    {
+    {    
         controls.Player.Enable();
     }
 
     private void OnDisable()
     {
+        controls.Player.Attack.performed -= Attack;
         controls.Player.Disable();
     }
 
     private void Start()
     {
+        controls.Player.Attack.performed += Attack;
         //We do this so the player starts facing down
         animator.SetFloat("moveX", 0);
         animator.SetFloat("moveY", -1);
@@ -54,6 +58,23 @@ public class PlayerController : MonoBehaviour
     {
         moveInput = controls.Player.Movement.ReadValue<Vector2>();
         rBody.velocity = moveInput * speed;
+    }
+
+    private void Attack(InputAction.CallbackContext context)
+    {
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+        }
+        coroutine = StartCoroutine(AttackCoRoutine());
+    }
+
+    private IEnumerator AttackCoRoutine()
+    {
+        animator.SetBool("IsAttacking", true);
+        yield return null;
+        animator.SetBool("IsAttacking", false);
+        yield return new WaitForSeconds(.5f);
     }
 
     private void UpdateAnimator4Dir()
