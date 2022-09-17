@@ -30,7 +30,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        controls.Player.Attack.performed -= Attack;
         controls.Player.Disable();
     }
 
@@ -44,14 +43,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(Using2Dir)
-        {
-            UpdateAnimator2Dir();
-        }
-        else
-        {
-            UpdateAnimator4Dir();
-        }
+        //if(Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Debug.Log("Pressed");
+        //    Attack();
+        //}
+        UpdateAnimator();
     }
 
     private void FixedUpdate()
@@ -62,11 +59,12 @@ public class PlayerController : MonoBehaviour
 
     private void Attack(InputAction.CallbackContext context)
     {
-        if (coroutine != null)
-        {
-            StopCoroutine(coroutine);
-        }
-        coroutine = StartCoroutine(AttackCoRoutine());
+        animator.SetTrigger("attacking");
+        //if (coroutine != null)
+        //{
+        //    StopCoroutine(coroutine);
+        //}
+        //coroutine = StartCoroutine(AttackCoRoutine());
     }
 
     private IEnumerator AttackCoRoutine()
@@ -77,7 +75,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.5f);
     }
 
-    private void UpdateAnimator4Dir()
+    private void UpdateAnimator()
     {
         if(moveInput != Vector2.zero)
         {
@@ -89,30 +87,5 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("IsWalking", false);
         }
-    }
-
-    private void UpdateAnimator2Dir()
-    {
-        if(moveInput == Vector2.zero)
-        {
-            isMoving = false;
-        }
-        else
-        {
-            isMoving = true;
-        }
-        //Set Bool based on whether we are moving or not
-        animator.SetBool("isWalking", isMoving);
-
-        //We use this because we dont have 4 dir sprites
-        if (moveInput.x < 0 && isMoving) //Going Left
-        {
-            playerSprite.flipX = true;
-        }
-        else if (moveInput.x > 0 && isMoving)
-        {
-            playerSprite.flipX = false;
-        }
-
     }
 }
